@@ -1,5 +1,28 @@
 var issueContainerEl = document.querySelector("#issues-container");
 
+var limitWarningEl = document.querySelector("#limit-warning");
+
+var repoNameEl = document.querySelector("#repo-name");
+
+
+
+var getRepoName = function() {
+  // locating the query from the url
+  var queryString = document.location.search;
+  
+  // once you have the query, need to find the part you need:  example is ?repo=microsoft/activities, so we split on the "=" and use an index of [1] since it is the second part we need
+  var repoName = queryString.split("=")[1];
+  
+  // passing repoName variable inot getRepoName() function, which will use the repoName to fetch the related issues from the GitHub API issues endpoint
+  
+  getRepoIssues(repoName);
+  repoNameEl.textContent = repoName;
+
+  
+
+
+};
+
 
 
 var getRepoIssues = function(repo) {
@@ -11,10 +34,16 @@ var getRepoIssues = function(repo) {
       response.json().then(function(data) {
         // pass response data to dom function
         displayIssues(data);
+        // check if api has paginated issues
+        if (response.headers.get("Link")) {
+          displayWarning(repo);
+        }
       });
     } else {
       alert("There was a problem with yoru requst!");
     }
+
+    
   });
 
 };
@@ -60,4 +89,18 @@ var displayIssues = function(issues) {
   }
 };
 
-getRepoIssues("facebook/react");
+var displayWarning = function(repo) {
+  // add text to warning container
+  limitWarningEl.textContent = "To see more than 30 issues, visit ";
+
+  var linkEl = document.createElement("a");
+  linkEl.textContent = "See More Issues on Github.com";
+  linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+  linkEl.setAttribute("target", "_blank");
+
+  // append to warning container
+  limitWarningEl.appendChild(linkEl);
+};
+
+//getRepoIssues("facebook/react");
+getRepoName();
