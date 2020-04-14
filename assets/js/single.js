@@ -14,12 +14,14 @@ var getRepoName = function() {
   var repoName = queryString.split("=")[1];
   
   // passing repoName variable inot getRepoName() function, which will use the repoName to fetch the related issues from the GitHub API issues endpoint
-  
-  getRepoIssues(repoName);
-  repoNameEl.textContent = repoName;
-
-  
-
+  if(repoName) {
+    // display repo name on the page
+    repoNameEl.textContent = repoName;
+    getRepoIssues(repoName);
+  } else {
+    // if not repo was given, redirect to homepage
+    document.location.replace("./index.html");
+  }
 
 };
 
@@ -40,7 +42,9 @@ var getRepoIssues = function(repo) {
         }
       });
     } else {
-      alert("There was a problem with yoru requst!");
+      // if not successful, redirect to homepage
+      document.location.replace("./index.html");
+      
     }
 
     
